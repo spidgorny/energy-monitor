@@ -1,0 +1,11 @@
+%YAML:1.0
+samples: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+responses: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
