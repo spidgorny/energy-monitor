@@ -38,6 +38,11 @@ class UploadToGoogleDrive {
 	function render() {
 		// Get the API client and construct the service object.
 		$this->client = $this->getClient();
+
+		$logger = new \Monolog\Logger('enemon');
+		$logger->pushHandler(new \Monolog\Handler\ErrorLogHandler());
+		$this->client->setLogger($logger);
+
 		$this->service = new Google_Service_Drive($this->client);
 
 		$this->listFiles();
@@ -150,7 +155,7 @@ class UploadToGoogleDrive {
 			/** @var Google_Service_Drive_DriveFile $file */
 			foreach ($results->getFiles() as $file) {
 				printf("%s %s (%s)\n", __METHOD__, $file->getName(), $file->getId());
-				if ($file->getName() == $this->folderName) {
+				if ($file->getName() == $folderName) {
 					$folderID = $file->getId();
 				}
 			}
@@ -197,7 +202,6 @@ class UploadToGoogleDrive {
 	}
 
 	function uploadFile($uploadFile) {
-		// -- upload
 		$fileMetadata = new Google_Service_Drive_DriveFile(array(
 			'name' => basename($uploadFile),
 			'parents' => array($this->folderID),
@@ -208,19 +212,22 @@ class UploadToGoogleDrive {
 			'mimeType' => mime_content_type($uploadFile),
 			'uploadType' => 'multipart',
 			'fields' => 'id'));
-		printf("Uploaded File ID: %s\n", $file->id);
+		printf("Uploaded File ID: %s\n", $file->getId());
+		printf("Mime Type: %s\n", $file->getMimeType());
 	}
 
 	function updateFile($fileID, $uploadFile) {
 		try {
 			$file = $this->service->files->get($fileID);
+//			print_r($file);
+
 			$content = file_get_contents($uploadFile);
 			$file = $this->service->files->update($fileID, $file, array(
 				'data' => $content,
-				'uploadType' => 'multipart',
+//				'uploadType' => 'multipart',
 //				'newRevision' => false,
 			));
-			printf("Updated File ID: %s\n", $file->id);
+			printf("Updated File ID: %s\n", $file->getId());
 		} catch (Exception $e) {
 			echo get_class($e), ': ', $e->getMessage(), PHP_EOL;
 		}
