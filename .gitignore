@@ -1,0 +1,6 @@
+# Created by .ignore support plugin (hsz.mobi)
+/client_id.json
+/*.rrd
+/writableFields.json
+/.idea
+/vendor
