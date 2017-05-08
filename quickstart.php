@@ -49,9 +49,11 @@ class UploadToGoogleDrive {
 		$uploadFile = __DIR__ . '/install.sh';
 		$fileID = $this->fileExists(basename($uploadFile));
 		if (!$fileID) {
+			echo 'File exists: ', $fileID, PHP_EOL;
 			$this->uploadFile($uploadFile);
 		} else {
 			echo 'File already exists', PHP_EOL;
+			$this->updateFile($fileID, $uploadFile);
 		}
 	}
 
@@ -156,10 +158,10 @@ class UploadToGoogleDrive {
 		}
 	}
 
-	function fileExists($folderName) {
+	function fileExists($fileName) {
 		$optParams = array(
 			'q' => implode(' and ', [
-				"name = '{$folderName}'",
+				"name = '{$fileName}'",
 				"mimeType != 'application/vnd.google-apps.folder'",
 				"trashed = false",
 				"'{$this->folderID}' in parents",
@@ -176,7 +178,7 @@ class UploadToGoogleDrive {
 			/** @var Google_Service_Drive_DriveFile $file */
 			foreach ($results->getFiles() as $file) {
 				printf("%s %s (%s)\n", __METHOD__, $file->getName(), $file->getId());
-				if ($file->getName() == $this->folderName) {
+				if ($file->getName() == $fileName) {
 					$fileID = $file->getId();
 				}
 			}
@@ -207,6 +209,21 @@ class UploadToGoogleDrive {
 			'uploadType' => 'multipart',
 			'fields' => 'id'));
 		printf("Uploaded File ID: %s\n", $file->id);
+	}
+
+	function updateFile($fileID, $uploadFile) {
+		try {
+			$file = $this->service->files->get($fileID);
+			$content = file_get_contents($uploadFile);
+			$file = $this->service->files->update($fileID, $file, array(
+				'data' => $content,
+				'uploadType' => 'multipart',
+//				'newRevision' => false,
+			));
+			printf("Updated File ID: %s\n", $file->id);
+		} catch (Exception $e) {
+			echo get_class($e), ': ', $e->getMessage(), PHP_EOL;
+		}
 	}
 
 }
