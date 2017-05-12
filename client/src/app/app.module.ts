@@ -1,23 +1,24 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {HttpModule} from '@angular/http';
 
-import { AppComponent } from './app.component';
-import { ConsumptionComponent } from './consumption/consumption.component';
+import {AppComponent} from './app.component';
+import {ConsumptionComponent} from './consumption/consumption.component';
 import {MailService} from "./mail.service";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ConsumptionComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule
-  ],
-  providers: [MailService],
-  bootstrap: [AppComponent]
+	declarations: [
+		AppComponent,
+		ConsumptionComponent
+	],
+	imports: [
+		BrowserModule,
+		FormsModule,
+		HttpModule
+	],
+	providers: [MailService],
+	bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
