@@ -7,4 +7,3 @@ $creator->addDataSource("speed:COUNTER:600:U:U");
 $creator->addArchive("AVERAGE:0.5:1:24");
 $creator->addArchive("AVERAGE:0.5:6:10");
 $creator->save();
-

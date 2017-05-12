@@ -4,17 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
+import { ConsumptionComponent } from './consumption/consumption.component';
+import {MailService} from "./mail.service";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ConsumptionComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule
   ],
-  providers: [],
+  providers: [MailService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
