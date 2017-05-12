@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
 
 define('APPLICATION_NAME', 'Drive API PHP Quickstart');
 define('CREDENTIALS_PATH', '~/.credentials/drive-php-quickstart.json');
-define('CLIENT_SECRET_PATH', __DIR__ . '/client_id.json');
+define('CLIENT_SECRET_PATH', __DIR__ . '/../log/client_secret_629697127223-ess57aikm5vlqa857gdc602b4s33meca.apps.googleusercontent.com.json');
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/drive-php-quickstart.json
 
@@ -51,7 +50,7 @@ class UploadToGoogleDrive {
 			$this->folderID = $this->makeFolder();
 		}
 
-		$uploadFile = __DIR__ . '/install.sh';
+		$uploadFile = __DIR__ . '/../install.sh';
 		$fileID = $this->fileExists(basename($uploadFile));
 		if (!$fileID) {
 			echo 'File exists: ', $fileID, PHP_EOL;
@@ -81,6 +80,7 @@ class UploadToGoogleDrive {
 			// Request authorization from the user.
 			$authUrl = $client->createAuthUrl();
 			printf("Open the following link in your browser:\n%s\n", $authUrl);
+			exec('start "' . $authUrl . '"');
 			print 'Enter verification code: ';
 			$authCode = trim(fgets(STDIN));
 
@@ -224,8 +224,8 @@ class UploadToGoogleDrive {
 			$content = file_get_contents($uploadFile);
 			$file = $this->service->files->update($fileID, $file, array(
 				'data' => $content,
-//				'uploadType' => 'multipart',
-//				'newRevision' => false,
+				//				'uploadType' => 'multipart',
+				//				'newRevision' => false,
 			));
 			printf("Updated File ID: %s\n", $file->getId());
 		} catch (Exception $e) {
@@ -234,5 +234,3 @@ class UploadToGoogleDrive {
 	}
 
 }
-
-(new UploadToGoogleDrive())->render();
