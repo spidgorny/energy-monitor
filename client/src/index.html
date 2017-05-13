@@ -1,15 +1,97 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Client</title>
-	<base href="/">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+	<title>Starter Template - Materialize</title>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS  -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="starter-template/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+	<link href="starter-template/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	<link rel="icon" type="image/x-icon" href="favicon.ico"/>
 	<link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/>
 </head>
-<body class="ph5">
-<app-root>Loading...</app-root>
+<body>
+<nav class="light-blue lighten-1" role="navigation">
+	<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
+		<ul class="right hide-on-med-and-down">
+			<li><a href="#">Navbar Link</a></li>
+		</ul>
+
+		<ul id="slide-out" class="side-nav">
+			<li>
+				<div class="userView">
+					<div class="background">
+						<img src="starter-template/images/office.jpg">
+					</div>
+					<a href="#!user"><img class="circle" src="starter-template/images/yuna.jpg"></a>
+					<a href="#!name"><span class="white-text name">John Doe</span></a>
+					<a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+				</div>
+			</li>
+			<li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+			<li><a href="#!">Second Link</a></li>
+			<li>
+				<div class="divider"></div>
+			</li>
+			<li><a class="subheader">Subheader</a></li>
+			<li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+		</ul>
+		<a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+	</div>
+</nav>
+<div class="section no-pad-bot" id="index-banner">
+	<div class="container">
+
+		<app-root>Loading...</app-root>
+
+	</div>
+</div>
+
+<footer class="page-footer orange">
+	<div class="container">
+		<div class="row">
+			<div class="col l6 s12">
+				<h5 class="white-text">Company Bio</h5>
+				<p class="grey-text text-lighten-4">We are a team of college students working on this project like it's
+					our full time job. Any amount would help support and continue development on this project and is
+					greatly appreciated.</p>
+
+
+			</div>
+			<div class="col l3 s12">
+				<h5 class="white-text">Settings</h5>
+				<ul>
+					<li><a class="white-text" href="#!">Link 1</a></li>
+					<li><a class="white-text" href="#!">Link 2</a></li>
+					<li><a class="white-text" href="#!">Link 3</a></li>
+					<li><a class="white-text" href="#!">Link 4</a></li>
+				</ul>
+			</div>
+			<div class="col l3 s12">
+				<h5 class="white-text">Connect</h5>
+				<ul>
+					<li><a class="white-text" href="#!">Link 1</a></li>
+					<li><a class="white-text" href="#!">Link 2</a></li>
+					<li><a class="white-text" href="#!">Link 3</a></li>
+					<li><a class="white-text" href="#!">Link 4</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="footer-copyright">
+		<div class="container">
+			Made by <a class="orange-text text-lighten-3" href="http://github.com/spidgorny/">Slawa</a>
+		</div>
+	</div>
+</footer>
+
+
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="starter-template/js/materialize.js"></script>
+<script src="starter-template/js/init.js"></script>
+
 </body>
 </html>
