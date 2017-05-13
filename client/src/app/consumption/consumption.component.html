@@ -1,0 +1,6 @@
+<input #myInput type="text" [(ngModel)]="message">
+<button
+	_click="onClick($event, myInput.value)"
+	(click)="update.emit({text: message})"
+>Click me</button>
+<hr />
