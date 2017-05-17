@@ -1,0 +1,22 @@
+{
+  "name": "energy-monitor",
+  "version": "1.0.0",
+  "description": "Energy Monitor based on Raspberry Pi with a webcam.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spidgorny/energy-monitor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spidgorny/energy-monitor/issues"
+  },
+  "homepage": "https://github.com/spidgorny/energy-monitor#readme",
+  "dependencies": {
+    "materialize-css": "^0.98.2"
+  }
+}

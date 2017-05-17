@@ -1,6 +1,19 @@
 {
     "require": {
         "google/apiclient": "2.0",
-        "nao-pon/flysystem-google-drive": "~1.1"
-    }
+        "nao-pon/flysystem-google-drive": "~1.1",
+		"spidgorny/nadlib": "dev-slawa"
+    },
+	"autoload": {
+		"classmap": [
+			"vendor/spidgorny/nadlib",
+			"src/class"
+		],
+		"files": [
+			"vendor/spidgorny/nadlib/init.php"
+		],
+		"psr-4": {
+			"EnergyMonitor\\": "src/EnergyMonitor/"
+		}
+	}
 }
