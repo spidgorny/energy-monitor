@@ -9,6 +9,11 @@
 class Index extends \IndexBase
 {
 
+	/**
+	 * @var Menu states
+	 */
+	public $active;
+
 	function __construct()
 	{
 		$this->csp['default-src'][] = 'fonts.googleapis.com';
@@ -19,8 +24,12 @@ class Index extends \IndexBase
 	public function initController() {
 		TaylorProfiler::start(__METHOD__);
 		if (!$this->controller) {
-			$slug = $this->request->getControllerString() ?: EnergyMonitor\Home::class;
-			//echo 'Slug: ', $slug, BR;
+			$resolver = new NamespaceResolver([
+				'EnergyMonitor\\',
+			]);
+			$slug = $resolver->getController(true);
+			$slug = $slug ?: EnergyMonitor\Home::class;
+//			echo 'Slug: ', $slug, BR;
 			if ($slug) {
 				$this->loadController($slug);
 				$this->bodyClasses[] = get_class($this->controller);
@@ -51,6 +60,19 @@ class Index extends \IndexBase
 			throw new Exception404($exception);
 		}
 		TaylorProfiler::stop(__METHOD__);
+	}
+
+	public function render()
+	{
+		$this->active = (object)[
+			basename(\EnergyMonitor\Home::class) => null,
+			basename(\EnergyMonitor\CheckVideo::class) => null,
+			basename(\EnergyMonitor\AdjustCamera::class) => null,
+		];
+		$class = get_class($this->getController());
+		$class = basename($class);	// remove NS
+		$this->active->$class = 'active';
+		return parent::render();
 	}
 
 	function renderProfiler() {
