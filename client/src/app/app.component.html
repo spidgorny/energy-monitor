@@ -1,13 +1,16 @@
+<!--
 <h1>
 	{{title}}
 </h1>
+-->
 
-
+<!--
 <ul>
 	<li *ngFor="let message of mail.messages">
 		{{message.text}}
 	</li>
 </ul>
+-->
 
 <app-consumption *ngFor="let message of mail.messages"
 				 [message]="message.text"
