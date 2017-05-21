@@ -7,3 +7,8 @@ Original idea:
 Enabling web-cam streaming:
  https://pimylifeup.com/raspberry-pi-webcam-server/
 
+## Hardware
+![](images/IMG_20170515_231615.jpg)
+
+## Software
+

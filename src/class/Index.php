@@ -68,6 +68,7 @@ class Index extends \IndexBase
 			basename(\EnergyMonitor\Home::class) => null,
 			basename(\EnergyMonitor\CheckVideo::class) => null,
 			basename(\EnergyMonitor\AdjustCamera::class) => null,
+			basename(\EnergyMonitor\CollectImages::class) => null,
 		];
 		$class = get_class($this->getController());
 		$class = basename($class);	// remove NS

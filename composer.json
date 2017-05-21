@@ -15,5 +15,8 @@
 		"psr-4": {
 			"EnergyMonitor\\": "src/EnergyMonitor/"
 		}
+	},
+	"minimum-stability": "dev",
+	"config": {
 	}
 }

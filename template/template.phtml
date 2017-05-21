@@ -44,7 +44,7 @@
 
 </head>
 
-<body>
+<body class="loaded">
 <!-- Start Page Loading -->
 <div id="loader-wrapper">
 	<div id="loader"></div>
@@ -178,7 +178,7 @@
 					<a href="AdjustCamera" class="waves-effect waves-cyan">
 						<i class="material-icons">email</i> Adjust Camera</a>
 				</li>
-				<li class="bold">
+				<li class="bold <?= $this->active->CollectImages ?>">
 					<a href="CollectImages" class="waves-effect waves-cyan">
 						<i class="material-icons">queue</i>
 						Collect Images</a>
