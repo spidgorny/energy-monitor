@@ -26,6 +26,7 @@ class Index extends \IndexBase
 		if (!$this->controller) {
 			$resolver = new NamespaceResolver([
 				'EnergyMonitor\\',
+				'EnergyMonitor\\OpenCV\\',
 			]);
 			$slug = $resolver->getController(true);
 			$slug = $slug ?: EnergyMonitor\Home::class;
