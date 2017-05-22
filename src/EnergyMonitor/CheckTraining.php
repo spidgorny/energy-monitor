@@ -31,11 +31,7 @@ class CheckTraining extends AppController
 			$content[] = 'rows: '.$matrix->getRows().BR;
 			$content[] = 'cols: '.$matrix->getCols().BR;
 
-			$sampleData = $matrix->getOne(0);
-			foreach (range(0, 9) as $l) {
-				$line = array_slice($sampleData, $l * 10, 10);
-				$content[] = implode(', ', $line) . BR;
-			}
+			//$content = $this->spellSample($matrix);
 
 			$digitMat = new OpenCV\Matrix($digits->getValue());
 
@@ -49,12 +45,26 @@ class CheckTraining extends AppController
 	function renderSamples(Matrix $matrix, Matrix $digitMat)
 	{
 		$content = [];
-		foreach (range(0, 10) as $index) {
+		foreach (range(0, $matrix->size()-1) as $index) {
 			$sample = $matrix->getSample($index);
-			$content[] = '<img src="' . $sample->getImagePath() . '" />' . BR;
+			$content[] = '<img src="' . $sample->getImagePath() . '" />' . '&nbsp;';
 
 			$digit = $digitMat->getOne($index);
-			$content[] = '<big>' . $digit[0] . '</big>' . BR;
+			$content[] = '<big>' . $digit[0] . '</big>' . ' ';
+		}
+		return $content;
+	}
+
+	/**
+	 * @param $matrix
+	 * @return array
+	 */
+	private function spellSample(Matrix $matrix): array {
+		$content = [];
+		$sampleData = $matrix->getOne(0);
+		foreach (range(0, 9) as $l) {
+			$line = array_slice($sampleData, $l * 10, 10);
+			$content[] = implode(', ', $line) . BR;
 		}
 		return $content;
 	}

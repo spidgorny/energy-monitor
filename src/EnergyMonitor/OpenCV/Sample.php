@@ -55,6 +55,7 @@ class Sample {
 			}
 		}
 
+		\Request::getInstance()->setCacheable(60*60*24*356);
 		header('Content-Type: image/png');
 		imagepng($img);
 		exit;
