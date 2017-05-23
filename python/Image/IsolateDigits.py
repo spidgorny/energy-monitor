@@ -1,4 +1,6 @@
 import cv2
+
+from Image.Cannify import Cannify
 from .ImageProcessor import ImageProcessor
 import random
 import numpy as np
@@ -20,11 +22,24 @@ class IsolateDigits(ImageProcessor):
         # must be RETR_EXTERNAL this time
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         contimage, contours, hierarchy = cv2.findContours(gray, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_NONE)
+
+        # remove tiny specs which happen to fit bounding box of big characters
+        cannify2 = Cannify(contimage)
+        contours = cannify2.filter_contours_by_height(contours, cannify2.low_height, cannify2.high_height)
+
+        # sort by x
+        contours = sorted(contours, key=self.sort_by_x)
+
         for c in contours:
             x, y, w, h = cv2.boundingRect(c)
             digits.append(self.img[y:y+h, x:x+w])
 
         return digits
+
+    @staticmethod
+    def sort_by_x(c):
+        x, y, w, h = cv2.boundingRect(c)
+        return x
 
     def isolate_by_contours(self, contours):
         to_delete = []

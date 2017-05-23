@@ -11,4 +11,4 @@ Enabling web-cam streaming:
 ![](images/IMG_20170515_231615.jpg)
 
 ## Software
-
+![](images/Figure_1.png)
