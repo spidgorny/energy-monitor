@@ -1,50 +1,40 @@
-import cv2
-import numpy as np
-from matplotlib import pyplot as plt
-from math import pi
-from os import listdir
 import os.path as path
-import random
+from os import listdir
+import cv2
+from matplotlib import pyplot as plt
+from Image.Straighten import *
+from Image.Cannify import *
+from matplotlib.widgets import Button
 
 
 class Canny:
 
     def __init__(self):
-        mypath = '../cache/'
-        onlyfiles = [f for f in listdir(mypath)
-                     if path.isfile(path.join(mypath, f))]
-        file = random.choice(onlyfiles)
+        self.mypath = '../cache/'
+        self.onlyfiles = [f for f in listdir(self.mypath)
+                     if path.isfile(path.join(self.mypath, f))]
+        self.img = None
+        self.width = None
+        self.height = None
+        self.next_image()
 
-        self.img = cv2.imread(path.join(mypath, file), 0)
+    def next_image(self):
+        file = random.choice(self.onlyfiles)
+        print('file', file)
+
+        self.img = cv2.imread(path.join(self.mypath, file), 0)
         self.height, self.width = self.img.shape
 
+        self.render()
+
     def render(self):
-        lines = cv2.HoughLines(self.img, 1, pi / 180, 140, min_theta=60 * pi / 180, max_theta=120 * pi / 180)
-        #print(lines)
-        skew = self.detect_skew(lines)
-        print("detectSkew: %.1f deg", skew)
+        straighten = Straighten(self.img)
+        straight = straighten.process()
 
-        straight = self.rotate(self.img, -skew)
+        edges = cv2.Canny(straight, 100, 200)
 
-        edges = cv2.Canny(straight, 100, 110)
-
-        contimage, contours, hierarchy = cv2.findContours(edges, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_NONE)
-
-        contimage = np.zeros((self.height, self.width, 3), np.uint8)
-        contours = self.filter_contours(contours, 100, 1000)
-        cv2.drawContours(contimage, contours, contourIdx=-1, color=(255, 255, 0))
-
-        c_good_aspect = []
-        for i, c in enumerate(contours):
-            x, y, w, h = cv2.boundingRect(c)
-            aspect_ratio = float(w) / h
-            if np.isclose(aspect_ratio, 0.5, 1.e-1):
-                c_good_aspect.append(c)
-                cv2.drawContours(contimage, c_good_aspect, contourIdx=len(c_good_aspect)-1, color=(255, 0, 0))
-            else:
-                cv2.drawContours(contimage, contours, contourIdx=i, color=(random.random()*255,
-                                                                           random.random()*255,
-                                                                           random.random()*255))
+        self.cannify = Cannify(edges)
+        contimage = self.cannify.process()
 
         plt.subplot(221), plt.imshow(self.img, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
@@ -55,21 +45,33 @@ class Canny:
         plt.subplot(223), plt.imshow(edges, cmap='gray')
         plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
 
-        plt.subplot(224), plt.imshow(contimage, cmap='gray')
+        plt.subplot(224), plt.imshow(contimage)
         plt.title('Contours'), plt.xticks([]), plt.yticks([])
 
-        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.01, hspace=0.01)
         mng = plt.get_current_fig_manager()
-        # mng.frame.Maximize(True)
-        mng.window.state('zoomed')
-
-        def onclick(event):
-            print('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-                  (event.button, event.x, event.y, event.xdata, event.ydata))
+        if "state" in dir(mng.window):
+            mng.window.state('zoomed')
+        elif "frame" in dir(mng):
+            mng.frame.Maximize(True)
+        else:
+            mng.window.showMaximized()
 
         # fig = plt.figure()
-        mng.canvas.mpl_connect('button_press_event', onclick)
+        # mng.canvas.mpl_connect('button_press_event', self.onclick)
+
+        # bnext = Button(plt.axes([0.81, 0.05, 0.1, 0.075]), 'Next')
+        # bnext.on_clicked(self.next_image)
+        # plt.ion()
         plt.show()
+
+    def onclick(self, event):
+        print('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+                  (event.button, event.x, event.y, event.xdata, event.ydata))
+        self.cannify.click()
+        contimage = self.cannify.process()
+        plt.subplot(224), plt.imshow(contimage)
+        event.canvas.draw()
 
     def filter_lines(self, lines):
         theta_min = 60 * pi / 180
@@ -84,38 +86,7 @@ class Canny:
         #     }
         # }
 
-    def detect_skew(self, lines):
-        theta_avr = 0
-        for line in lines:
-            # print(line)
-            theta_avr += line[0][1]
-
-        theta_deg = 0
-        if len(lines):
-            theta_avr /= len(lines)
-            theta_deg = (theta_avr / pi * 180) - 90
-
-        return theta_deg
-
-    def rotate(self, img, skew):
-        height, width = img.shape
-        M = cv2.getRotationMatrix2D((width / 2, height / 2), skew * 2, 1)
-        img_rotated = cv2.warpAffine(img, M, img.shape[::-1])
-        return img_rotated
-
-    def filter_contours(self, contours, min_area, max_area):
-        good = []
-        print('len conours', len(contours))
-        for c in contours:
-            area = cv2.contourArea(c)
-            if min_area <= area <= max_area:
-                x, y, w, h = cv2.boundingRect(c)
-                aspect_ratio = float(w) / h
-                print(x, y, w, h, aspect_ratio)
-                good.append(c)
-
-        return good
-
 
 x = Canny()
-x.render()
+while True:
+    x.next_image()

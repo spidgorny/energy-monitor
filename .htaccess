@@ -4,5 +4,5 @@
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-l
 
-	RewriteRule .* energy-monitor/index.php [L]
+	RewriteRule .* /slawa/rrd/index.php [L]
 </IfModule>
