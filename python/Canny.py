@@ -2,11 +2,11 @@ import os.path as path
 from os import listdir
 import cv2
 from matplotlib import pyplot as plt
-
 from Image.IsolateDigits import IsolateDigits
 from Image.Straighten import *
 from Image.Cannify import *
-from matplotlib.widgets import Button
+# from matplotlib.widgets import Button
+import multiprocessing
 
 
 class Canny:
@@ -16,17 +16,17 @@ class Canny:
         self.mypath = '../cache/'
         self.onlyfiles = [f for f in listdir(self.mypath)
                      if path.isfile(path.join(self.mypath, f))]
+        self.file = None
         self.img = None
         self.width = None
         self.height = None
         self.cannify = None
-        self.next_image()
 
     def next_image(self):
-        file = random.choice(self.onlyfiles)
-        print('file', file)
+        self.file = random.choice(self.onlyfiles)
+        print('file', self.file)
 
-        self.img = cv2.imread(path.join(self.mypath, file), 0)
+        self.img = cv2.imread(path.join(self.mypath, self.file), 0)
         self.height, self.width = self.img.shape
 
         self.render()
@@ -42,7 +42,9 @@ class Canny:
         contours = self.cannify.getDigits()
 
         isolated = np.zeros((self.height, self.width, 3), np.uint8)
-        cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255))
+        # cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255), thickness=cv2.FILLED)
+        for c in contours:
+            cv2.fillPoly(isolated, pts=[c], color=(255, 255, 255))
 
         isolator = IsolateDigits(isolated)
         digits = isolator.isolate(contours)
@@ -51,9 +53,24 @@ class Canny:
         # normalized_contours = self.normalize_contours(contours)
         # cv2.drawContours(digimage, normalized_contours, contourIdx=-1, color=(200, 200, 200))
         for i, d in enumerate(digits):
-            self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
+            d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
+            self.OverlayImage(digimage, d25, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
 
-        self.plot(straight, edges, contimage, isolated, digimage)
+        # self.plot(straight, edges, contimage, isolated, digimage)
+        # job_for_another_core = multiprocessing.Process(target=self.plot,
+        #                                                args=(straight, edges, contimage, isolated, digimage))
+
+        job_for_another_core = multiprocessing.Process(target=self.plot_result,
+                                                       args=[digimage])
+        job_for_another_core.start()
+
+        numbers = ''
+        while len(numbers) != len(digits):
+            numbers = input('Numbers [x' + str(len(digits)) + ']:')
+            print(numbers)
+
+        job_for_another_core.terminate()
+        self.saveDigits(digits, list(numbers))  # list of digits, not a whole number
 
     def plot(self, straight, edges, contimage, isolated, digimage):
         plt.subplot(231), plt.imshow(self.img, cmap='gray')
@@ -75,13 +92,15 @@ class Canny:
         plt.title('Digits'), plt.xticks([]), plt.yticks([])
 
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.01, hspace=0.01)
-        mng = plt.get_current_fig_manager()
-        if "state" in dir(mng.window):
-            mng.window.state('zoomed')
-        elif "frame" in dir(mng):
-            mng.frame.Maximize(True)
-        else:
-            mng.window.showMaximized()
+
+        if False:
+            mng = plt.get_current_fig_manager()
+            if "state" in dir(mng.window):
+                mng.window.state('zoomed')
+            elif "frame" in dir(mng):
+                mng.frame.Maximize(True)
+            else:
+                mng.window.showMaximized()
 
         # fig = plt.figure()
         # mng.canvas.mpl_connect('button_press_event', self.onclick)
@@ -89,6 +108,24 @@ class Canny:
         # bnext = Button(plt.axes([0.81, 0.05, 0.1, 0.075]), 'Next')
         # bnext.on_clicked(self.next_image)
         # plt.ion()
+        plt.ioff()
+
+        figure = plt.gcf()
+        dpi = figure.get_dpi()
+        # print('dpi', dpi)
+        figure.set_size_inches((640*3/dpi, 480*2/dpi), forward=True)
+        # plt.rcParams["figure.figsize"] = (50, 30)
+        plt.show()
+
+    def plot_result(self, digimage):
+        plt.imshow(digimage, cmap='gray')
+        plt.title('Digits'), plt.xticks([]), plt.yticks([])
+
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.01, hspace=0.01)
+        figure = plt.gcf()
+        dpi = figure.get_dpi()
+        # print('dpi', dpi)
+        figure.set_size_inches((640 / dpi, 480 / dpi), forward=True)
         plt.show()
 
     def onclick(self, event):
@@ -155,6 +192,20 @@ class Canny:
                         # merged = tuple(merger)
                         src[y+posy, x+posx] = merger[0]
 
-x = Canny()
-while True:
-    x.next_image()
+    def saveDigits(self, digits, numbers):
+        filename = path.basename(self.file)
+        filename = filename.replace('.png', '.yml')
+        fs = cv2.FileStorage(path.join("training/", filename), flags=1)
+
+        for i, d in enumerate(digits):
+            gray = cv2.cvtColor(d, cv2.COLOR_BGR2GRAY)
+            fs.write("digit" + str(i), gray)
+
+        # numbers = np.asarray(numbers, dtype=np.uint8)
+        # fs.write("numbers", numbers)
+        fs.release()
+
+        with open(path.join("training/", filename), "a") as myfile:
+            myfile.write("numbers: [" + ', '.join(numbers) + "]\n")
+        print('done')
+
