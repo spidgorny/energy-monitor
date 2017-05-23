@@ -3,7 +3,8 @@ class ImageProcessor:
 
     def __init__(self, img):
         self.img = img
-        self.height, self.width = self.img.shape
+        # https://stackoverflow.com/questions/21483301/how-to-unpack-optional-items-from-a-tuple
+        self.height, self.width, _ = (list(self.img.shape) + [None]*3)[:3]
 
     def process(self):
         """ Do processing here and return the result"""

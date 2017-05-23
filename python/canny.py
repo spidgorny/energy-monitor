@@ -2,6 +2,8 @@ import os.path as path
 from os import listdir
 import cv2
 from matplotlib import pyplot as plt
+
+from Image.IsolateDigits import IsolateDigits
 from Image.Straighten import *
 from Image.Cannify import *
 from matplotlib.widgets import Button
@@ -10,12 +12,14 @@ from matplotlib.widgets import Button
 class Canny:
 
     def __init__(self):
+        print('Reading files...')
         self.mypath = '../cache/'
         self.onlyfiles = [f for f in listdir(self.mypath)
                      if path.isfile(path.join(self.mypath, f))]
         self.img = None
         self.width = None
         self.height = None
+        self.cannify = None
         self.next_image()
 
     def next_image(self):
@@ -35,18 +39,40 @@ class Canny:
 
         self.cannify = Cannify(edges)
         contimage = self.cannify.process()
+        contours = self.cannify.getDigits()
 
-        plt.subplot(221), plt.imshow(self.img, cmap='gray')
+        isolated = np.zeros((self.height, self.width, 3), np.uint8)
+        cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255))
+
+        isolator = IsolateDigits(isolated)
+        digits = isolator.isolate(contours)
+
+        digimage = np.zeros((self.height, self.width, 3), np.uint8)
+        # normalized_contours = self.normalize_contours(contours)
+        # cv2.drawContours(digimage, normalized_contours, contourIdx=-1, color=(200, 200, 200))
+        for i, d in enumerate(digits):
+            self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
+
+        self.plot(straight, edges, contimage, isolated, digimage)
+
+    def plot(self, straight, edges, contimage, isolated, digimage):
+        plt.subplot(231), plt.imshow(self.img, cmap='gray')
         plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 
-        plt.subplot(222), plt.imshow(straight, cmap='gray')
+        plt.subplot(232), plt.imshow(straight, cmap='gray')
         plt.title('Straight Image'), plt.xticks([]), plt.yticks([])
 
-        plt.subplot(223), plt.imshow(edges, cmap='gray')
+        plt.subplot(233), plt.imshow(edges, cmap='gray')
         plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
 
-        plt.subplot(224), plt.imshow(contimage)
+        plt.subplot(234), plt.imshow(contimage)
         plt.title('Contours'), plt.xticks([]), plt.yticks([])
+
+        plt.subplot(235), plt.imshow(isolated, cmap='gray')
+        plt.title('Isolated'), plt.xticks([]), plt.yticks([])
+
+        plt.subplot(236), plt.imshow(digimage, cmap='gray')
+        plt.title('Digits'), plt.xticks([]), plt.yticks([])
 
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.01, hspace=0.01)
         mng = plt.get_current_fig_manager()
@@ -86,6 +112,48 @@ class Canny:
         #     }
         # }
 
+    def normalize_contours(self, contours):
+        print('before normalize', len(contours))
+        # cv2.drawContours(digimage, contours, contourIdx=-1, color=(50, 50, 50))
+
+        normalized_contours = []
+        for cn, c in enumerate(contours):
+            x, y, w, h = cv2.boundingRect(c)
+            c2 = np.zeros(c.shape, c.dtype)
+            print('c', c.shape, c.dtype, len(c))
+            for i, coord_list in enumerate(c):
+                coord = coord_list[0]
+                # print('coord', coord)
+                # print(i, 'c2', c2, coord[0, 0], x)
+                # c2.itemset((i, 0, 0), coord[0, 0]-x)
+                # c2.itemset((i, 0, 1), coord[0, 1]-y)
+                c2[i, 0, 0] = coord[0] - x + 25 * cn
+                c2[i, 0, 1] = coord[1] - y
+
+            print('c2', c2.shape, c2.dtype, len(c2))
+            # cv2.drawContours(digimage, c2, contourIdx=-1, color=(200, 200, 200))
+            normalized_contours.append(c2)
+
+        print('after normalize', len(normalized_contours))
+        return normalized_contours
+
+    def OverlayImage(self, src, overlay, posx, posy, S, D):
+        o_height, o_width, _ = overlay.shape
+        s_height, s_width, _ = src.shape
+        for x in range(o_width):
+            if x+posx < s_width:
+                for y in range(o_height):
+                    if y+posy < s_width:
+
+                        source = src[y+posy, x+posx]
+                        over = overlay[y, x]
+                        merger = [0, 0, 0, 0]
+
+                        for i in range(1):
+                            merger[i] = (S[i]*source[i]+D[i]*over[i])
+
+                        # merged = tuple(merger)
+                        src[y+posy, x+posx] = merger[0]
 
 x = Canny()
 while True:

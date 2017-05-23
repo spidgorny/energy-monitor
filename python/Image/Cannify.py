@@ -12,39 +12,47 @@ class Cannify(ImageProcessor):
         self.low_area = 300
         self.high_area = 1100
         self.low_height = 45
-        self.high_height = 55
+        self.high_height = 60
+        self.digits = []
 
     def process(self):
-        contimage, contours, hierarchy = cv2.findContours(self.img, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_NONE)
+        contimage, contours, hierarchy = cv2.findContours(self.img, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
         print('len contours',  len(contours))
 
         contimage = np.zeros((self.height, self.width, 3), np.uint8)
-        # cv2.drawContours(contimage, contours, contourIdx=-1, color=(255, 255, 0))
+        cv2.drawContours(contimage, contours, contourIdx=-1, color=(50, 50, 50))
 
-        contours1 = self.filter_contours_by_area(contours, self.low_area, self.high_area)
-        print('len contours1', len(contours1))
+        # contours1 = self.filter_contours_by_area(contours, self.low_area, self.high_area)
+        # print('len contours1', len(contours1))
+        # cv2.drawContours(contimage, contours1, contourIdx=-1, color=(255, 255, 0))
 
-        contours2 = self.filter_contours_by_height(contours1, self.low_height, self.high_height)
+        contours2 = self.filter_contours_by_height(contours, self.low_height, self.high_height)
         print('len contours2', len(contours2))
+        cv2.drawContours(contimage, contours2, contourIdx=-1, color=(0, 255, 0))
 
-        contours3 = self.filter_contours_by_aspect(contours2, 0.5)
+        contours3 = self.filter_contours_by_aspect(contours2, 0.5, 4.e-1)
         print('len contours3', len(contours3))
+        cv2.drawContours(contimage, contours3, contourIdx=-1, color=(0, 0, 255))
 
         average_y, average_height = self.get_average_height(contours3)
+        average_height *= 0.5
+        print('average_y', average_y)
         print('average_height', average_height)
-        cv2.line(contimage, (0, math.floor(average_y - 0)),
-                 (self.width, math.floor(average_y - 0)), color=(255, 0, 0))
-        cv2.line(contimage, (0, math.floor(average_y - average_height)),
-                 (self.width, math.floor(average_y - average_height)), color=(0, 0, 255))
-        cv2.line(contimage, (0, math.floor(average_y + average_height)),
-                 (self.width, math.floor(average_y + average_height)), color=(0, 0, 255))
-        contours4 = self.filter_contours_by_position(contours3, average_y)
-        print('len contours4', len(contours4))
+        if average_y and average_height:
+            cv2.line(contimage, (0, math.floor(average_y - 0)),
+                     (self.width, math.floor(average_y - 0)), color=(255, 0, 0))
+            cv2.line(contimage, (0, math.floor(average_y - average_height)),
+                     (self.width, math.floor(average_y - average_height)), color=(0, 0, 255))
+            cv2.line(contimage, (0, math.floor(average_y + average_height)),
+                     (self.width, math.floor(average_y + average_height)), color=(0, 0, 255))
+            contours4 = self.filter_contours_by_position(contours3, average_y, average_height)
+            print('len contours4', len(contours4))
+            cv2.drawContours(contimage, contours4, contourIdx=-1, color=(0, 255, 255))
 
-        cv2.drawContours(contimage, contours1, contourIdx=-1, color=(255, 255, 0))
-        cv2.drawContours(contimage, contours2, contourIdx=-1, color=(0, 255, 0))
-        cv2.drawContours(contimage, contours3, contourIdx=-1, color=(0, 0, 255))
-        cv2.drawContours(contimage, contours4, contourIdx=-1, color=(0, 255, 255))
+            contours5 = self.reintroduce_inner_elements(contours4, contours)
+            cv2.drawContours(contimage, contours5, contourIdx=-1, color=(255, 0, 255))
+
+            self.digits = contours5
 
         return contimage
 
@@ -72,7 +80,7 @@ class Cannify(ImageProcessor):
 
         return good
 
-    def filter_contours_by_aspect(self, contours, desired_aspect):
+    def filter_contours_by_aspect(self, contours, desired_aspect, sigma):
         good = []
         aspect_list = []
         for c in contours:
@@ -80,7 +88,7 @@ class Cannify(ImageProcessor):
             aspect_ratio = float(w) / h
             # print('a', aspect_ratio)
             aspect_list.append(aspect_ratio)
-            if np.isclose(aspect_ratio, desired_aspect, 3.e-1):
+            if np.isclose(aspect_ratio, desired_aspect, sigma):
                 good.append(c)
 
         print('average aspect', self.mean(aspect_list))
@@ -97,18 +105,45 @@ class Cannify(ImageProcessor):
             y_list.append(y)
             height_list.append(h)
 
+        average_y = None
+        average_height = None
         # average_y = self.mean(y_list)
-        average_y = max(y_list, key=y_list.count)
-        average_height = self.mean(height_list)
+        if len(y_list):
+            average_y = max(y_list, key=y_list.count)
+            average_height = self.mean(height_list)
         return average_y, average_height
 
-    def filter_contours_by_position(self, contours, average_height):
+    def filter_contours_by_position(self, contours, average_y, average_height):
         good = []
         for c in contours:
             x, y, w, h = cv2.boundingRect(c)
-            ok = (average_height - h) <= y <= (average_height + h)
-            print((average_height - h), y, (average_height + h), ok)
+            ok = (average_y - average_height) <= y <= (average_y + average_height)
+            # print((average_y - average_height), y, (average_y + average_height), ok)
             if ok:
                 good.append(c)
 
         return good
+
+    def reintroduce_inner_elements(self, contours_big, contours_all):
+        small = []
+        for n in contours_big:
+            nx, ny, nw, nh = cv2.boundingRect(n)
+            for c in contours_all:
+                x, y, w, h = cv2.boundingRect(c)
+                if w <= nw and h <= nh and x >= nx and y >= ny and x <= (nx + nw) and y <= (ny + nh):
+                    small.append(c)
+
+        print('small', len(small))
+        return contours_big + small
+
+    def getDigits(self):
+        hashes = []
+        unique = []
+        for c in self.digits:
+            h = hash(c.tobytes())
+            if h not in hashes:
+                hashes.append(h)
+                unique.append(c)
+
+        print('unique', len(self.digits), len(unique))
+        return unique
