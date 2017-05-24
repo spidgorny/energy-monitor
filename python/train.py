@@ -6,6 +6,8 @@ import cv2
 from os import path, listdir
 from beeprint import pp
 import yaml
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 
 class Train:
@@ -14,8 +16,52 @@ class Train:
         self.onlyfiles = [f for f in listdir(self.mypath)
                           if path.isfile(path.join(self.mypath, f))]
         self.file = None
+        self.all_digits = None
+        self.all_numbers = None
 
     def train(self):
+        self.all_digits, self.all_numbers = self.read_files()
+        print('all_digits', self.all_digits.shape, self.all_digits.dtype)
+        print('all_numbers', self.all_numbers.shape, self.all_numbers.dtype)
+
+        knn = cv2.ml.KNearest_create()
+        knn.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
+
+        self.check_one_digit(knn)
+        self.check_all_digits(knn)
+        self.check_split_digits()
+
+    def check_split_digits(self):
+        X_trn, X_tst, y_trn, y_tst = train_test_split(self.all_digits, self.all_numbers, test_size=0.2)
+
+        knn = cv2.ml.KNearest_create()
+        knn.train(X_trn, cv2.ml.ROW_SAMPLE, y_trn)
+
+        ret, results, neighbours, dist = knn.findNearest(X_tst, 5)
+        results = np.reshape(results, (len(results)))
+        print(y_tst.shape, results.shape)
+        accuracy = accuracy_score(y_tst, results)
+        print('accuracy', accuracy * 100.0, '%')
+
+    def check_all_digits(self, knn):
+        ret, results, neighbours, dist = knn.findNearest(self.all_digits, 5)
+        results = np.reshape(results, (len(results)))
+        print(len(results), results.shape)
+        print(len(self.all_numbers), self.all_numbers.shape)
+        the_same = results == self.all_numbers
+        correct = np.count_nonzero(the_same)
+        # print(the_same)
+        print(len(the_same), correct, self.all_digits.shape[0], correct * 100.0 / self.all_digits.shape[0], '%')
+
+    def check_one_digit(self, knn):
+        check = np.asarray([self.all_digits[0]])
+        ret, results, neighbours, dist = knn.findNearest(check, 5)
+        # pp([ret, results, neighbours, dist])
+        print('check', check.shape, results[0])
+        # [0, 4, 6, 3, 0, 8]
+        assert(results[0] == self.all_numbers[0])
+
+    def read_files(self):
         all_digits = np.zeros((0, 450), dtype=np.float32)
         all_numbers = np.zeros(0, dtype=np.float32)
         for file in self.onlyfiles:
@@ -27,29 +73,12 @@ class Train:
             digits = self.reshape_digits(digits)
 
             for d in digits:
-                print(all_digits.shape, d.shape)
+                # print(all_digits.shape, d.shape)
                 all_digits = np.append(all_digits, [d], 0)
 
             numbers = self.reshape_numbers(numbers)
             all_numbers = np.append(all_numbers, numbers, 0)
-
-        print('all_digits', all_digits.shape, all_digits.dtype)
-        print('all_numbers', all_numbers.shape, all_numbers.dtype)
-
-        knn = cv2.ml.KNearest_create()
-        knn.train(all_digits, cv2.ml.ROW_SAMPLE, all_numbers)
-
-        check = np.asarray([all_digits[0]])
-        ret, results, neighbours, dist = knn.findNearest(check, 5)
-        print('check', check.shape, results[0])
-        # [0, 4, 6, 3, 0, 8]
-        # pp([ret, results, neighbours, dist])
-
-        check = np.asarray([all_digits[1]])
-        ret, results, neighbours, dist = knn.findNearest(check, 5)
-        print('check', check.shape, results[0])
-        # [0, 4, 6, 3, 0, 8]
-        # pp([ret, results, neighbours, dist])
+        return all_digits, all_numbers
 
     def read_file(self, filename):
         fs = cv2.FileStorage(filename, flags=0)
