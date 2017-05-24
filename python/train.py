@@ -40,8 +40,14 @@ class Train:
         ret, results, neighbours, dist = knn.findNearest(X_tst, 5)
         results = np.reshape(results, (len(results)))
         print(y_tst.shape, results.shape)
+
+        # replace inf
+        y_tst[y_tst == np.Inf] = 9999
+
+        # print(y_tst)
+        # print(results)
         accuracy = accuracy_score(y_tst, results)
-        print('accuracy', accuracy * 100.0, '%')
+        print('accuracy', '{:.2f}'.format(accuracy * 100.0), '%')
 
     def check_all_digits(self, knn):
         ret, results, neighbours, dist = knn.findNearest(self.all_digits, 5)
@@ -51,7 +57,8 @@ class Train:
         the_same = results == self.all_numbers
         correct = np.count_nonzero(the_same)
         # print(the_same)
-        print(len(the_same), correct, self.all_digits.shape[0], correct * 100.0 / self.all_digits.shape[0], '%')
+        p_correct = correct * 100.0 / self.all_digits.shape[0]
+        print(len(the_same), correct, self.all_digits.shape[0], '{:.2f}'.format(p_correct), '%')
 
     def check_one_digit(self, knn):
         check = np.asarray([self.all_digits[0]])
