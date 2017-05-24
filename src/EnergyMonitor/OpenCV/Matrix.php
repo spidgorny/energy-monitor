@@ -60,7 +60,11 @@ class Matrix
 	function getSample($index)
 	{
 		$data = $this->getOne($index);
-		return new Sample($data);
+		return new Sample($data, 10, 10);
+	}
+
+	function getData() {
+		return $this->data;
 	}
 
 }

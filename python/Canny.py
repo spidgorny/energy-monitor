@@ -42,9 +42,13 @@ class Canny:
         contours = self.cannify.getDigits()
 
         isolated = np.zeros((self.height, self.width, 3), np.uint8)
-        # cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255), thickness=cv2.FILLED)
-        for c in contours:
-            cv2.fillPoly(isolated, pts=[c], color=(255, 255, 255))
+        cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255))
+                         # thickness=cv2.FILLED)
+
+        # alternatively fill the contours
+        # todo: this does not let openings
+        # for c in contours:
+        #     cv2.fillPoly(isolated, pts=[c], color=(255, 255, 255))
 
         isolator = IsolateDigits(isolated)
         digits = isolator.isolate(contours)
