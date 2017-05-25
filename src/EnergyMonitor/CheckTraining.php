@@ -47,7 +47,7 @@ class CheckTraining extends AppController
 		$content = [];
 		foreach (range(0, $matrix->size()-1) as $index) {
 			$sample = $matrix->getSample($index);
-			$content[] = '<img src="' . $sample->getImagePath() . '" />' . '&nbsp;';
+			$content[] = '<img src="' . $sample->getImagePath(3) . '" />' . '&nbsp;';
 
 			$digit = $digitMat->getOne($index);
 			$content[] = '<big>' . $digit[0] . '</big>' . ' ';

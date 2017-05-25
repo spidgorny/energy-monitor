@@ -3,6 +3,7 @@ from os import listdir
 import cv2
 from matplotlib import pyplot as plt
 from Image.IsolateDigits import IsolateDigits
+from Image.Pipeline import Pipeline
 from Image.Straighten import *
 from Image.Cannify import *
 # from matplotlib.widgets import Button
@@ -10,16 +11,16 @@ import multiprocessing
 
 
 class Canny:
-
     def __init__(self):
         print('Reading files...')
         self.mypath = '../cache/'
         self.onlyfiles = [f for f in listdir(self.mypath)
-                     if path.isfile(path.join(self.mypath, f))]
+                          if path.isfile(path.join(self.mypath, f))]
         self.file = None
         self.img = None
         self.width = None
         self.height = None
+        """ :var Canny """
         self.cannify = None
 
     def next_image(self):
@@ -32,26 +33,8 @@ class Canny:
         self.render()
 
     def render(self):
-        straighten = Straighten(self.img)
-        straight = straighten.process()
-
-        edges = cv2.Canny(straight, 100, 200)
-
-        self.cannify = Cannify(edges)
-        contimage = self.cannify.process()
-        contours = self.cannify.getDigits()
-
-        isolated = np.zeros((self.height, self.width, 3), np.uint8)
-        cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255))
-                         # thickness=cv2.FILLED)
-
-        # alternatively fill the contours
-        # todo: this does not let openings
-        # for c in contours:
-        #     cv2.fillPoly(isolated, pts=[c], color=(255, 255, 255))
-
-        isolator = IsolateDigits(isolated)
-        digits = isolator.isolate(contours)
+        p = Pipeline(self.file)
+        straight, edges, contimage, isolated, digits = p.process()
 
         digimage = np.zeros((self.height, self.width, 3), np.uint8)
         # normalized_contours = self.normalize_contours(contours)
@@ -60,12 +43,15 @@ class Canny:
             d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
             self.OverlayImage(digimage, d25, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
 
-        # self.plot(straight, edges, contimage, isolated, digimage)
-        # job_for_another_core = multiprocessing.Process(target=self.plot,
-        #                                                args=(straight, edges, contimage, isolated, digimage))
-
-        job_for_another_core = multiprocessing.Process(target=self.plot_result,
-                                                       args=[digimage])
+        show_progress = False
+        if show_progress:
+            # self.plot(straight, edges, contimage, isolated, digimage)
+            job_for_another_core = multiprocessing.Process(
+                target=self.plot,
+                args=(straight, edges, contimage, isolated, digimage))
+        else:
+            job_for_another_core = multiprocessing.Process(target=self.plot_result,
+                                                           args=[digimage])
         job_for_another_core.start()
 
         numbers = ''
@@ -117,7 +103,7 @@ class Canny:
         figure = plt.gcf()
         dpi = figure.get_dpi()
         # print('dpi', dpi)
-        figure.set_size_inches((640*3/dpi, 480*2/dpi), forward=True)
+        figure.set_size_inches((640 * 3 / dpi, 480 * 2 / dpi), forward=True)
         # plt.rcParams["figure.figsize"] = (50, 30)
         plt.show()
 
@@ -134,7 +120,7 @@ class Canny:
 
     def onclick(self, event):
         print('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-                  (event.button, event.x, event.y, event.xdata, event.ydata))
+              (event.button, event.x, event.y, event.xdata, event.ydata))
         self.cannify.click()
         contimage = self.cannify.process()
         plt.subplot(224), plt.imshow(contimage)
@@ -182,19 +168,19 @@ class Canny:
         o_height, o_width, _ = overlay.shape
         s_height, s_width, _ = src.shape
         for x in range(o_width):
-            if x+posx < s_width:
+            if x + posx < s_width:
                 for y in range(o_height):
-                    if y+posy < s_width:
+                    if y + posy < s_width:
 
-                        source = src[y+posy, x+posx]
+                        source = src[y + posy, x + posx]
                         over = overlay[y, x]
                         merger = [0, 0, 0, 0]
 
                         for i in range(1):
-                            merger[i] = (S[i]*source[i]+D[i]*over[i])
+                            merger[i] = (S[i] * source[i] + D[i] * over[i])
 
                         # merged = tuple(merger)
-                        src[y+posy, x+posx] = merger[0]
+                        src[y + posy, x + posx] = merger[0]
 
     def saveDigits(self, digits, numbers):
         filename = path.basename(self.file)
@@ -212,4 +198,3 @@ class Canny:
         with open(path.join("training/", filename), "a") as myfile:
             myfile.write("numbers: [" + ', '.join(numbers) + "]\n")
         print('done')
-

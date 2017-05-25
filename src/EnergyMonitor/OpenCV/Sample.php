@@ -26,7 +26,7 @@ class Sample {
 		$this->rows = $height;
 	}
 
-	function getImagePath() {
+	function getImagePath($zoom = 2) {
 		return 'SampleShow?'.http_build_query([
 			'action' => 'img',
 			'width' => $this->cols,
@@ -35,6 +35,7 @@ class Sample {
 //				implode(',', $this->data)
 				pack("c*", ...$this->data)
 			)),
+			'zoom' => $zoom,
 		]);
 	}
 
@@ -46,12 +47,13 @@ class Sample {
 //		debug($_REQUEST['data'], strlen($data), sizeof($this->data));
 		$this->rows = $request->getInt('height');
 		$this->cols = $request->getInt('width');
+		$zoom = $request->getInt('zoom') ?: 2;
 
 		//pre_print_r($this->cols, $this->rows, strlen($data), sizeof($this->data));
 		assert(sizeof($this->data) == $this->rows*$this->cols);
 //		flush();
 		if (!headers_sent()) {
-			$this->imgAction(1);
+			$this->imgAction($zoom);
 		} else {
 			$this->spellSample();
 			exit;

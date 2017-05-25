@@ -1,11 +1,11 @@
-import random
-from ppretty import ppretty
+# import random
+# from ppretty import ppretty
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import cv2
 from os import path, listdir
-from beeprint import pp
-import yaml
+# from beeprint import pp
+# import yaml
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
@@ -49,6 +49,8 @@ class Train:
         accuracy = accuracy_score(y_tst, results)
         print('accuracy', '{:.2f}'.format(accuracy * 100.0), '%')
 
+        knn.save('ocr.knn')
+
     def check_all_digits(self, knn):
         ret, results, neighbours, dist = knn.findNearest(self.all_digits, 5)
         results = np.reshape(results, (len(results)))
@@ -66,6 +68,7 @@ class Train:
         # pp([ret, results, neighbours, dist])
         print('check', check.shape, results[0])
         # [0, 4, 6, 3, 0, 8]
+        print(results[0], self.all_numbers[0])
         assert(results[0] == self.all_numbers[0])
 
     def read_files(self):
