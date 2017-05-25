@@ -8,6 +8,9 @@ from os import path, listdir
 # import yaml
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.svm import SVC
+import pickle
+import os
 
 
 class Train:
@@ -24,12 +27,45 @@ class Train:
         print('all_digits', self.all_digits.shape, self.all_digits.dtype)
         print('all_numbers', self.all_numbers.shape, self.all_numbers.dtype)
 
-        knn = cv2.ml.KNearest_create()
-        knn.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
+        knn = None
+        svm = None
+        # knn = cv2.ml.KNearest_create()
+        if knn:
+            knn.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
+            self.check_one_digit(knn)
+            self.check_all_digits(knn)
+            self.check_split_digits()
+            knn.save('ocr.knn')
+        elif svm:
+            svm = cv2.ml.SVM_create()
+            svm.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
+        else:
+            self.all_digits, self.all_numbers = self.removeInf()
+            X_trn, X_tst, y_trn, y_tst = train_test_split(self.all_digits, self.all_numbers, test_size=0.2)
+            clf = SVC()
+            clf.fit(X_trn, y_trn)
+            pred = clf.predict(X_tst)
+            acc = accuracy_score(pred, y_tst)
+            print('accuracy', '{:.2f}'.format(acc * 100.0), '%')
 
-        self.check_one_digit(knn)
-        self.check_all_digits(knn)
-        self.check_split_digits()
+            with open('ocr.svm', 'wb') as pickle_file:
+                pickle.dump(clf, pickle_file)
+
+            statinfo = os.stat('ocr.svm')
+            print('size', statinfo.st_size)
+
+    def removeInf(self):
+        to_delete = []
+        for i, n in enumerate(self.all_numbers):
+            if n == np.Inf:
+                to_delete.append(i)
+
+        a = np.delete(self.all_digits, to_delete, axis=0)
+        b = np.delete(self.all_numbers, to_delete, axis=0)
+        print('to_delete', len(to_delete))
+        print('removeInf', self.all_digits.shape, self.all_numbers.shape)
+        print('removeInf', a.shape, b.shape)
+        return a, b
 
     def check_split_digits(self):
         X_trn, X_tst, y_trn, y_tst = train_test_split(self.all_digits, self.all_numbers, test_size=0.2)
@@ -41,15 +77,13 @@ class Train:
         results = np.reshape(results, (len(results)))
         print(y_tst.shape, results.shape)
 
-        # replace inf
+        # replace inf @see if we should remove them at all
         y_tst[y_tst == np.Inf] = 9999
 
         # print(y_tst)
         # print(results)
         accuracy = accuracy_score(y_tst, results)
         print('accuracy', '{:.2f}'.format(accuracy * 100.0), '%')
-
-        knn.save('ocr.knn')
 
     def check_all_digits(self, knn):
         ret, results, neighbours, dist = knn.findNearest(self.all_digits, 5)

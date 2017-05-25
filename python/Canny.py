@@ -24,10 +24,11 @@ class Canny:
         self.cannify = None
 
     def next_image(self):
-        self.file = random.choice(self.onlyfiles)
+        file = random.choice(self.onlyfiles)
+        self.file = path.join(self.mypath, file)
         print('file', self.file)
 
-        self.img = cv2.imread(path.join(self.mypath, self.file), 0)
+        self.img = cv2.imread(self.file, 0)
         self.height, self.width = self.img.shape
 
         self.render()
@@ -40,8 +41,8 @@ class Canny:
         # normalized_contours = self.normalize_contours(contours)
         # cv2.drawContours(digimage, normalized_contours, contourIdx=-1, color=(200, 200, 200))
         for i, d in enumerate(digits):
-            d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
-            self.OverlayImage(digimage, d25, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
+            # d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
+            self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
 
         show_progress = False
         if show_progress:
