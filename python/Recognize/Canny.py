@@ -2,12 +2,16 @@ import os.path as path
 from os import listdir
 import cv2
 from matplotlib import pyplot as plt
+from sklearn.neighbors import KNeighborsClassifier
+
 from Image.IsolateDigits import IsolateDigits
 from Image.Pipeline import Pipeline
 from Image.Straighten import *
 from Image.Cannify import *
 # from matplotlib.widgets import Button
 import multiprocessing
+
+from Recognize.Train import Train
 
 
 class Canny:
@@ -55,6 +59,10 @@ class Canny:
                                                            args=[digimage])
         job_for_another_core.start()
 
+        samples = p.resizeReshape(digits)
+        recognize = self.recognize(samples)
+        print('Detected', recognize)
+
         numbers = ''
         while len(numbers) != len(digits):
             numbers = input('Numbers [x' + str(len(digits)) + ']:')
@@ -62,6 +70,15 @@ class Canny:
 
         job_for_another_core.terminate()
         self.saveDigits(digits, list(numbers))  # list of digits, not a whole number
+
+    def recognize(self, samples):
+        train = Train()
+        train.all_digits, train.all_numbers = train.read_files()
+        all_digits, all_numbers = train.removeInf()
+        clf = KNeighborsClassifier()
+        clf.fit(all_digits, all_numbers)
+        res = clf.predict(samples)
+        return res
 
     def plot(self, straight, edges, contimage, isolated, digimage):
         plt.subplot(231), plt.imshow(self.img, cmap='gray')

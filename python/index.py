@@ -1,8 +1,5 @@
 from multiprocessing import freeze_support
-from Canny import Canny
-import multiprocessing
-import numpy as np
-
+from Recognize.Canny import Canny
 
 if __name__ == '__main__':
     freeze_support()

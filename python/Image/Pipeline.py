@@ -40,3 +40,14 @@ class Pipeline:
         digits = isolator.isolate(contours)
 
         return straight, edges, contimage, isolated, digits
+
+    def resizeReshape(self, digits):
+        # resize, reshape
+        samples = np.zeros((0, 450))
+        for d in digits:
+            d30 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
+            gray = cv2.cvtColor(d30, cv2.COLOR_BGR2GRAY)
+            features = np.reshape(gray, 450)
+            samples = np.append(samples, [features], 0)
+
+        return samples
