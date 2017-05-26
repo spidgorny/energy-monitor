@@ -1,11 +1,13 @@
 # import random
 # from ppretty import ppretty
+import numpy
 import numpy as np
 # import matplotlib.pyplot as plt
 import cv2
 from os import path, listdir
 # from beeprint import pp
 # import yaml
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
@@ -13,6 +15,7 @@ from sklearn.svm import SVC
 import pickle
 import os
 from sklearn.naive_bayes import GaussianNB
+from config import config_ocr
 
 
 class Train:
@@ -62,6 +65,10 @@ class Train:
         pred = clf.predict(X_tst)
         acc = accuracy_score(pred, y_tst)
         print('accuracy', '{:.2f}'.format(acc * 100.0), '%')
+
+        print(list(range(10)))
+        numpy.set_printoptions(threshold=numpy.nan)
+        print(metrics.confusion_matrix(y_tst, pred, range(10)))
 
         with open('ocr.snn', 'wb') as pickle_file:
             pickle.dump(clf, pickle_file)
@@ -151,7 +158,8 @@ class Train:
         assert(results[0] == self.all_numbers[0])
 
     def read_files(self):
-        all_digits = np.zeros((0, 450), dtype=np.float32)
+        dimentions = config_ocr['sample_size'][0] * config_ocr['sample_size'][1]
+        all_digits = np.zeros((0, dimentions), dtype=np.float32)
         all_numbers = np.zeros(0, dtype=np.float32)
         for file in self.onlyfiles:
             self.file = path.join(self.mypath, file)
@@ -196,8 +204,8 @@ class Train:
     def reshape_digits(self, digits):
         # reshape
         for i, d in enumerate(digits):
-            d = cv2.resize(d, (30, 15))
-            d = np.reshape(d, 30 * 15)
+            d = cv2.resize(d, config_ocr['sample_size'])
+            d = np.reshape(d, config_ocr['sample_size'][0] * config_ocr['sample_size'][1])
             d = d.astype(np.float32)
             digits[i] = d
 

@@ -6,6 +6,7 @@ import numpy as np
 from Image.Cannify import Cannify
 from Image.IsolateDigits import IsolateDigits
 from Image.Straighten import Straighten
+from config import config_ocr
 
 
 class Pipeline:
@@ -43,11 +44,12 @@ class Pipeline:
 
     def resizeReshape(self, digits):
         # resize, reshape
-        samples = np.zeros((0, 450))
+        dimentions = config_ocr['sample_size'][0] * config_ocr['sample_size'][1]
+        samples = np.zeros((0, dimentions))
         for d in digits:
-            d30 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
+            d30 = cv2.resize(d, config_ocr['sample_size'], interpolation=cv2.INTER_LANCZOS4)
             gray = cv2.cvtColor(d30, cv2.COLOR_BGR2GRAY)
-            features = np.reshape(gray, 450)
+            features = np.reshape(gray, dimentions)
             samples = np.append(samples, [features], 0)
 
         return samples
