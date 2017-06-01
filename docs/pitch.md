@@ -14,20 +14,4 @@ The project is rather small and straightforward - what could possibly go wrong?
 
 BTW, I had failed two other start-ups in the past.
 
-Thank you.  
-
-# Competitors
-
-* https://en.wikipedia.org/wiki/AlertMe acquired by British Gas
-* https://en.wikipedia.org/wiki/Opower acquired by Oracle
-	https://www.youtube.com/watch?v=8xHqRYw_M0s
-* https://en.wikipedia.org/wiki/Kill_A_Watt
-	http://www.p3international.com/products/p4400.html
-* https://en.wikipedia.org/wiki/Google_PowerMeter is cancelled
-* https://sense.com/ is detecting appliances by sensors
-* https://engage.efergy.com/dashboard
-* https://www.postscapes.com/wifi-home-energy-monitor-neurio/
-
-# Information
-
-* https://learn.openenergymonitor.org/electricity-monitoring/ac-power-theory/introduction
+Thank you.
