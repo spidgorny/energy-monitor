@@ -8,11 +8,14 @@ class Straighten(ImageProcessor):
     def process(self):
         lines = cv2.HoughLines(self.img, 1, pi / 180, 140, min_theta=60 * pi / 180, max_theta=120 * pi / 180)
         #print(lines)
-        skew = self.detect_skew(lines)
-        print("detectSkew: %.1f deg", skew)
+        if lines:
+            skew = self.detect_skew(lines)
+            print("detectSkew: %.1f deg", skew)
 
-        straight = self.rotate(self.img, -skew)
-        return straight
+            straight = self.rotate(self.img, -skew)
+            return straight
+        else:
+            return self.img
 
     def detect_skew(self, lines):
         theta_avr = 0
