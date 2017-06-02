@@ -1,0 +1,1 @@
+scp -r python pi@192.168.1.220:energy-monitor/
