@@ -4,3 +4,13 @@
 /writableFields.json
 /.idea
 /vendor
+/emeocv
+/cache
+/log
+/node_modules
+/python/.idea
+/python/__pycache__
+/python/Image/__pycache__
+/python/*.knn
+/python/*.svm
+/python/training
