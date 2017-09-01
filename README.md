@@ -67,3 +67,18 @@ When preparing for the Startup Weekend I've researched other projects which aim 
 # General Information
 
 * https://learn.openenergymonitor.org/electricity-monitoring/ac-power-theory/introduction
+
+# Installation
+
+1. ``cd python``
+2. ``sudo ./install.sh``
+3. Put files from the web-cam to cache/ folder.
+4. ``python3 index.py`` will read files from cache/ folder. It will recognize the digits in the files and output the training data to python/training/ folder.
+5. ``python3 train.py`` will use SNN algorithm to create a model for recognizing digits which will come in the future.
+6. ``python3 ocr.py [../cache/20170516-025309.png]`` the filename part is optional. It will use the created model to recognize digits on the supplied image. You can try to recognize different images and see if it will work reliably.
+7. ``python3 video.py`` is the final code which can be run by cronjob once an hour to capture a video from a web-cam and recognize digits and store them into the database. This code is not finished.
+
+# Current status
+
+Mostly working proof of concept. Not finished 100%. It was only tested on Windows. Not tested on Raspberry Pi. video.py needs some more work.
+

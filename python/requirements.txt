@@ -1,9 +1,9 @@
 numpy
-cv2
+#cv2
 matplotlib
 sklearn
 yaml
 
 # how to compile opencv on raspberry pi
-http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/
-http://answers.opencv.org/question/89075/no-makefile-to-build-after-cmake/
+# http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/
+# http://answers.opencv.org/question/89075/no-makefile-to-build-after-cmake/
