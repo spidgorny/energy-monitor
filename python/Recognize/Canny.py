@@ -48,7 +48,7 @@ class Canny:
             # d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
             self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
 
-        show_progress = False
+        show_progress = True
         if show_progress:
             # self.plot(straight, edges, contimage, isolated, digimage)
             job_for_another_core = multiprocessing.Process(

@@ -6,9 +6,9 @@ from math import pi
 class Straighten(ImageProcessor):
 
     def process(self):
-        lines = cv2.HoughLines(self.img, 1, pi / 180, 140, min_theta=60 * pi / 180, max_theta=120 * pi / 180)
+        lines = cv2.HoughLines(self.img, 1, pi / 180, 140, 60 * pi / 180, 120 * pi / 180)
         #print(lines)
-        if lines:
+        if lines is not None:
             skew = self.detect_skew(lines)
             print("detectSkew: %.1f deg", skew)
 
