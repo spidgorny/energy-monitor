@@ -60,6 +60,9 @@ When preparing for the Startup Weekend I've researched other projects which aim 
 * [Sense](https://sense.com/) is detecting appliances by sensors wrapped *around* the wires.
 * [Efergy](https://engage.efergy.com/dashboard)
 * [Neurio](https://www.postscapes.com/wifi-home-energy-monitor-neurio/)
+* [Smart Me](http://www.smart-me.com/) - The smart-me Meter is the first Electricity Meter with a direct connection to Cloud. (200 EUR)
+* [Discovergy](https://discovergy.com/) - Replace your meter with a digital meter for only 100 EUR.
+* [Smappee](http://www.smappee.com/be_en/energy-monitor-home) - Simply connect Smappee to your fuse box with a clip-on sensor and let Smappee do the rest.
 
 # General Information
 
