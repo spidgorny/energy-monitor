@@ -1,3 +1,5 @@
+import configparser
+
 import cv2
 from .ImageProcessor import ImageProcessor
 import random
@@ -9,14 +11,27 @@ class Cannify(ImageProcessor):
 
     def __init__(self, img, debug: bool = False):
         super().__init__(img)
-        self.low_area = 300
-        self.high_area = 1100
+        # self.low_area = 300
+        # self.high_area = 1100
         self.low_height = 45
         self.high_height = 60
         self.digits = []
-        self.debug = debug
+        self.debug: bool = debug
+
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.config: map = config['Cannify']
+        self.low_height: int = int(self.config['low_height'])
+        self.high_height: int = int(self.config['high_height'])
+        self.min_aspect: float = float(self.config['min_aspect'])
+        self.max_aspect: float = float(self.config['max_aspect'])
 
     def process(self):
+        """
+        We are finding contours in the image,
+        then we filter the contours that would fit the specified bounds (see config.ini)
+        @return:
+        """
         cv2.imwrite('5-cannify.png', self.img)
         contours, hierarchy = cv2.findContours(self.img, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
         print('len contours', len(contours))
@@ -33,10 +48,14 @@ class Cannify(ImageProcessor):
         contours2 = self.filter_contours_by_height(contours, self.low_height, self.high_height)
         print('len contours2', len(contours2))
         cv2.drawContours(contimage, contours2, contourIdx=-1, color=(0, 255, 0))
+        if self.debug:
+            cv2.imwrite('6-contours2.png', contimage)
 
-        contours3 = self.filter_contours_by_aspect(contours2, 0.5, 4.e-1)
+        contours3 = self.filter_contours_by_aspect(contours2, self.min_aspect, self.max_aspect)
         print('len contours3', len(contours3))
         cv2.drawContours(contimage, contours3, contourIdx=-1, color=(0, 0, 255))
+        if self.debug:
+            cv2.imwrite('6-contours3.png', contimage)
 
         average_y, average_height = self.get_average_height(contours3)
         if average_height is not None and average_height > 0:
@@ -53,9 +72,13 @@ class Cannify(ImageProcessor):
                 contours4 = self.filter_contours_by_position(contours3, average_y, average_height)
                 print('len contours4', len(contours4))
                 cv2.drawContours(contimage, contours4, contourIdx=-1, color=(0, 255, 255))
+                if self.debug:
+                    cv2.imwrite('6-contours4.png', contimage)
 
                 contours5 = self.reintroduce_inner_elements(contours4, contours)
                 cv2.drawContours(contimage, contours5, contourIdx=-1, color=(255, 0, 255))
+                if self.debug:
+                    cv2.imwrite('6-contours5.png', contimage)
 
                 self.digits = contours5
 

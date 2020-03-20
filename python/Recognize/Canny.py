@@ -12,20 +12,29 @@ from Image.Cannify import *
 import multiprocessing
 
 from Recognize.Train import Train
+import imghdr
 
 
 class Canny:
-    def __init__(self):
+    def __init__(self, debug: bool = False):
         print('Reading files...')
         self.mypath = '../cache/'
+        imageTypes = ['gif', 'png', 'jpg', 'jpeg']
         self.onlyfiles = [f for f in listdir(self.mypath)
-                          if path.isfile(path.join(self.mypath, f))]
+                          if path.isfile(path.join(self.mypath, f))
+                          and imghdr.what(path.join(self.mypath, f)) in imageTypes
+                          ]
         self.file = None
         self.img = None
         self.width = None
         self.height = None
         """ :var Canny """
         self.cannify = None
+        self.debug = debug
+
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.config = config['Canny']
 
     def next_image(self):
         file = random.choice(self.onlyfiles)
@@ -40,6 +49,8 @@ class Canny:
     def render(self):
         p = Pipeline(self.file)
         straight, edges, contimage, isolated, digits = p.process()
+        if not len(digits):
+            raise Exception('no digits found in the image')
 
         digimage = np.zeros((self.height, self.width, 3), np.uint8)
         # normalized_contours = self.normalize_contours(contours)
@@ -47,6 +58,9 @@ class Canny:
         for i, d in enumerate(digits):
             # d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
             self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
+
+        if self.debug:
+            cv2.imwrite('8-digits.png', digimage)
 
         show_progress = True
         if show_progress:

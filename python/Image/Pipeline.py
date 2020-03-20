@@ -19,17 +19,18 @@ class Pipeline:
         self.height, self.width = self.img.shape
         """ :var Canny """
         self.cannify = None
-        self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
-        self.debug: bool = bool(self.config['Pipeline']['debug'])
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.config: map = config['Pipeline']
+        self.debug: bool = bool(self.config['debug'])
 
     def process(self):
         if self.debug:
             cv2.imwrite('1-original.png', self.img)
 
         edges = cv2.Canny(self.img,
-                          int(self.config['Pipeline']['canny.threshold1']),
-                          int(self.config['Pipeline']['canny.threshold2']))
+                          int(self.config['canny.threshold1']),
+                          int(self.config['canny.threshold2']))
         if self.debug:
             cv2.imwrite('2-edges.png', edges)
 
