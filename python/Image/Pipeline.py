@@ -1,3 +1,5 @@
+import configparser
+
 import cv2
 from os import path
 
@@ -11,26 +13,40 @@ from config import config_ocr
 
 class Pipeline:
 
-    def __init__(self, filename):
+    def __init__(self, filename: str):
         self.file = filename
         self.img = cv2.imread(self.file, 0)
         self.height, self.width = self.img.shape
         """ :var Canny """
         self.cannify = None
+        self.config = configparser.ConfigParser()
+        self.config.read('config.ini')
+        self.debug: bool = bool(self.config['Pipeline']['debug'])
 
     def process(self):
-        straighten = Straighten(self.img)
+        if self.debug:
+            cv2.imwrite('1-original.png', self.img)
+
+        edges = cv2.Canny(self.img,
+                          int(self.config['Pipeline']['canny.threshold1']),
+                          int(self.config['Pipeline']['canny.threshold2']))
+        if self.debug:
+            cv2.imwrite('2-edges.png', edges)
+
+        straighten = Straighten(edges, debug=self.debug)
         straight = straighten.process()
+        if self.debug:
+            cv2.imwrite('4-straight.png', straight)
 
-        edges = cv2.Canny(straight, 100, 200)
-
-        self.cannify = Cannify(edges)
+        self.cannify = Cannify(straight, debug=self.debug)
         contimage = self.cannify.process()
         contours = self.cannify.getDigits()
 
         isolated = np.zeros((self.height, self.width, 3), np.uint8)
         cv2.drawContours(isolated, contours, contourIdx=-1, color=(255, 255, 255))
-                         # thickness=cv2.FILLED)
+        # thickness=cv2.FILLED)
+        if self.debug:
+            cv2.imwrite('7-isolated.png', isolated)
 
         # alternatively fill the contours
         # todo: this does not let openings

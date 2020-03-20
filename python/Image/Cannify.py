@@ -7,20 +7,24 @@ import math
 
 class Cannify(ImageProcessor):
 
-    def __init__(self, img):
+    def __init__(self, img, debug: bool = False):
         super().__init__(img)
         self.low_area = 300
         self.high_area = 1100
         self.low_height = 45
         self.high_height = 60
         self.digits = []
+        self.debug = debug
 
     def process(self):
-        contimage, contours, hierarchy = cv2.findContours(self.img, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
-        print('len contours',  len(contours))
+        cv2.imwrite('5-cannify.png', self.img)
+        contours, hierarchy = cv2.findContours(self.img, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+        print('len contours', len(contours))
 
         contimage = np.zeros((self.height, self.width, 3), np.uint8)
         cv2.drawContours(contimage, contours, contourIdx=-1, color=(50, 50, 50))
+        if self.debug:
+            cv2.imwrite('6-contours.png', contimage)
 
         # contours1 = self.filter_contours_by_area(contours, self.low_area, self.high_area)
         # print('len contours1', len(contours1))

@@ -21,9 +21,10 @@ class IsolateDigits(ImageProcessor):
         digits = []
         # must be RETR_EXTERNAL this time
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        contimage, contours, hierarchy = cv2.findContours(gray, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_NONE)
+        contours, hierarchy = cv2.findContours(gray, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_NONE)
 
         # remove tiny specs which happen to fit bounding box of big characters
+        contimage = np.zeros((self.height, self.width, 3), np.uint8)
         cannify2 = Cannify(contimage)
         contours = cannify2.filter_contours_by_height(contours, cannify2.low_height, cannify2.high_height)
 
