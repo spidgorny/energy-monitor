@@ -35,6 +35,9 @@ class Canny:
         config = configparser.ConfigParser()
         config.read('config.ini')
         self.config = config['Canny']
+        if bool(self.config['onlyFirstImage']):
+            self.onlyfiles = [self.onlyfiles[0]]
+        self.multiprocessing = bool(self.config['multiprocessing'])
 
     def next_image(self):
         file = random.choice(self.onlyfiles)
@@ -59,19 +62,22 @@ class Canny:
             # d25 = cv2.resize(d, (15, 30), interpolation=cv2.INTER_LANCZOS4)
             self.OverlayImage(digimage, d, i * 40, 0, (0, 0, 0, 0), (1, 1, 1, 1))
 
-        if self.debug:
-            cv2.imwrite('8-digits.png', digimage)
+        # if self.debug:
+        #     cv2.imwrite('8-digits.png', digimage)
 
-        show_progress = True
-        if show_progress:
-            # self.plot(straight, edges, contimage, isolated, digimage)
-            job_for_another_core = multiprocessing.Process(
-                target=self.plot,
-                args=(straight, edges, contimage, isolated, digimage))
-        else:
-            job_for_another_core = multiprocessing.Process(target=self.plot_result,
-                                                           args=[digimage])
-        job_for_another_core.start()
+        job_for_another_core = None
+        print('self.multiprocessing', self.multiprocessing)
+        if self.multiprocessing:
+            show_progress = True
+            if show_progress:
+                # self.plot(straight, edges, contimage, isolated, digimage)
+                job_for_another_core = multiprocessing.Process(
+                    target=self.plot,
+                    args=(straight, edges, contimage, isolated, digimage))
+            else:
+                job_for_another_core = multiprocessing.Process(target=self.plot_result,
+                                                               args=[digimage])
+            job_for_another_core.start()
 
         samples = p.resizeReshape(digits)
         recognize = self.recognize(samples)
@@ -82,7 +88,8 @@ class Canny:
             numbers = input('Numbers [x' + str(len(digits)) + ']:')
             print(numbers)
 
-        job_for_another_core.terminate()
+        if job_for_another_core:
+            job_for_another_core.terminate()
         self.saveDigits(digits, list(numbers))  # list of digits, not a whole number
 
     def recognize(self, samples):
