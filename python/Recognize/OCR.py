@@ -1,4 +1,5 @@
 import argparse
+import configparser
 import pickle
 import random
 from os import listdir
@@ -29,22 +30,22 @@ class OCR:
             self.filename = path.join(self.mypath, file)
         else:
             self.filename = filename
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.config = config['OCR']
+        self.method = self.config['method']
 
     def render(self):
         p = Pipeline(self.filename)
         straight, edges, contimage, isolated, digits = p.process()
         samples = p.resizeReshape(digits)
 
-        knn = False
-        svc = False
-        gnb = False
-        snn = True
-        if knn:
+        if self.method == 'knn':
             knn = cv2.ml.KNearest_create()
             knn.load('ocr.knn')  # <- this method does not exist
             ret, results, neighbours, dist = knn.findNearest([digits], 5)
             pprint(ret, results, neighbours, dist)
-        elif svc:
+        elif self.method == 'svc':
             with open('ocr.svm', 'rb') as pickle_file:
                 clf = pickle.load(pickle_file)
 
@@ -53,7 +54,7 @@ class OCR:
 
             img = Image.open(self.filename)
             img.show()
-        elif gnb:
+        elif self.method == 'gnb':
             with open('ocr.gnb', 'rb') as pickle_file:
                 clf = pickle.load(pickle_file)
 
@@ -63,7 +64,7 @@ class OCR:
             img = Image.open(self.filename)
             img.show()
 
-        elif snn:
+        elif self.method == 'snn':
             with open('ocr.snn', 'rb') as pickle_file:
                 clf = pickle.load(pickle_file)
 

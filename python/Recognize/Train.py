@@ -1,5 +1,7 @@
 # import random
 # from ppretty import ppretty
+import configparser
+
 import numpy
 import numpy as np
 # import matplotlib.pyplot as plt
@@ -15,10 +17,13 @@ from sklearn.svm import SVC
 import pickle
 import os
 from sklearn.naive_bayes import GaussianNB
-from config import config_ocr
 
 
 class Train:
+    """
+    Reading files from the ./training/ folder.
+    """
+
     def __init__(self):
         self.mypath = 'training/'
         self.onlyfiles = [f for f in listdir(self.mypath)
@@ -26,33 +31,34 @@ class Train:
         self.file = None
         self.all_digits = None
         self.all_numbers = None
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self.sample_size = eval(config['Pipeline']['sample_size'])
+        self.config = config['Train']
+        self.method = self.config['method']
 
     def train(self):
         self.all_digits, self.all_numbers = self.read_files()
         print('all_digits', self.all_digits.shape, self.all_digits.dtype)
         print('all_numbers', self.all_numbers.shape, self.all_numbers.dtype)
 
-        knn = False
-        svm = False
-        svc = False
-        gnb = False
-        snn = True
         # knn = cv2.ml.KNearest_create()
-        if knn:
+        if self.method == 'knn':
+            knn = KNeighborsClassifier()
             knn.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
             self.check_one_digit(knn)
             self.check_all_digits(knn)
             self.check_split_digits()
             knn.save('ocr.knn')
-        elif svm:
+        elif self.method == 'svm':
             # unfinished since there is no load() method
             svm = cv2.ml.SVM_create()
             svm.train(self.all_digits, cv2.ml.ROW_SAMPLE, self.all_numbers)
-        elif svc:
+        elif self.method == 'svc':
             self.test_svc()
-        elif gnb:
+        elif self.method == 'gnb':
             self.test_gnb()
-        elif snn:
+        elif self.method == 'snn':
             self.test_snn()
         else:
             raise RuntimeError('Unspecified classifier')
@@ -158,7 +164,7 @@ class Train:
         assert(results[0] == self.all_numbers[0])
 
     def read_files(self):
-        dimentions = config_ocr['sample_size'][0] * config_ocr['sample_size'][1]
+        dimentions = self.sample_size[0] * self.sample_size[1]
         all_digits = np.zeros((0, dimentions), dtype=np.float32)
         all_numbers = np.zeros(0, dtype=np.float32)
         for file in self.onlyfiles:
@@ -204,8 +210,8 @@ class Train:
     def reshape_digits(self, digits):
         # reshape
         for i, d in enumerate(digits):
-            d = cv2.resize(d, config_ocr['sample_size'])
-            d = np.reshape(d, config_ocr['sample_size'][0] * config_ocr['sample_size'][1])
+            d = cv2.resize(d, self.sample_size)
+            d = np.reshape(d, self.sample_size[0] * self.sample_size[1])
             d = d.astype(np.float32)
             digits[i] = d
 

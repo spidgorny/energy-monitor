@@ -16,6 +16,7 @@ import imghdr
 
 
 class Canny:
+
     def __init__(self, debug: bool = False):
         print('Reading files...')
         self.mypath = '../cache/'
@@ -35,9 +36,9 @@ class Canny:
         config = configparser.ConfigParser()
         config.read('config.ini')
         self.config = config['Canny']
-        if bool(self.config['onlyFirstImage']):
+        if self.config.getboolean('onlyFirstImage'):
             self.onlyfiles = [self.onlyfiles[0]]
-        self.multiprocessing = bool(self.config['multiprocessing'])
+        self.multiprocessing = self.config.getboolean('multiprocessing')
 
     def next_image(self):
         file = random.choice(self.onlyfiles)
@@ -52,6 +53,7 @@ class Canny:
     def render(self):
         p = Pipeline(self.file)
         straight, edges, contimage, isolated, digits = p.process()
+        print('len digits', len(digits))
         if not len(digits):
             raise Exception('no digits found in the image')
 
@@ -80,6 +82,7 @@ class Canny:
             job_for_another_core.start()
 
         samples = p.resizeReshape(digits)
+        print('len samples', len(samples), samples[0].shape)
         recognize = self.recognize(samples)
         print('Detected', recognize)
 

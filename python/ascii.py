@@ -1,11 +1,11 @@
-import sys;
-from PIL import Image;
+import sys
+from PIL import Image
 import numpy as np
 
 chars = np.asarray(list(' .,:;irsXA253hMHGS#9B&@'))
 
 if len(sys.argv) != 4:
-    print('Usage: ./asciinator.py image scale factor')
+    print('Usage: ./asciinator.py image:file scale-factor:float')
     print(sys.argv)
     sys.exit()
 

@@ -1,14 +1,9 @@
 import configparser
-
 import cv2
-from os import path
-
 import numpy as np
-
 from Image.Cannify import Cannify
 from Image.IsolateDigits import IsolateDigits
 from Image.Straighten import Straighten
-from config import config_ocr
 
 
 class Pipeline:
@@ -23,6 +18,8 @@ class Pipeline:
         config.read('config.ini')
         self.config: map = config['Pipeline']
         self.debug: bool = bool(self.config['debug'])
+        self.sample_size = eval(self.config['sample_size'])
+        print('sample_size', type(self.sample_size), self.sample_size)
 
     def process(self):
         if self.debug:
@@ -60,13 +57,21 @@ class Pipeline:
         return straight, edges, contimage, isolated, digits
 
     def resizeReshape(self, digits):
-        # resize, reshape
-        dimentions = config_ocr['sample_size'][0] * config_ocr['sample_size'][1]
+        """
+        Reformat from 2D image with 3 color channels
+        to a single line of pixels for machine learning
+        (actually x*y features of a single pixel)
+        @param digits:
+        @return:
+        """
+        print('original shape', len(digits), digits[0].shape)
+        dimentions = self.sample_size[0] * self.sample_size[1]
         samples = np.zeros((0, dimentions))
         for d in digits:
-            d30 = cv2.resize(d, config_ocr['sample_size'], interpolation=cv2.INTER_LANCZOS4)
+            d30 = cv2.resize(d, self.sample_size, interpolation=cv2.INTER_LANCZOS4)
             gray = cv2.cvtColor(d30, cv2.COLOR_BGR2GRAY)
             features = np.reshape(gray, dimentions)
             samples = np.append(samples, [features], 0)
 
+        print('resulting shape', len(samples), samples[0].shape)
         return samples

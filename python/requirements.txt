@@ -3,6 +3,8 @@ numpy
 matplotlib
 sklearn
 yaml
+Image
+imghdr
 
 # how to compile opencv on raspberry pi
 # http://www.pyimagesearch.com/2016/04/18/install-guide-raspberry-pi-3-raspbian-jessie-opencv-3/
