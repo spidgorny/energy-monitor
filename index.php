@@ -6,4 +6,5 @@ function __($a) {
 	return $a;
 }
 
-echo Index::getInstance(1)->render();
+$config = Config::getInstance();
+echo Index::getInstance(true, $config)->render();

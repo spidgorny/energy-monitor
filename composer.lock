@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "675845c6326ead33b1ff0f99e5d04d26",
+    "content-hash": "75915459d47ab91b14fe14e457db5491",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -54,12 +54,12 @@
             "version": "v2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-api-php-client.git",
+                "url": "https://github.com/googleapis/google-api-php-client.git",
                 "reference": "cd4d61678bc26267f3e5371735ae3f579709ea30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/cd4d61678bc26267f3e5371735ae3f579709ea30",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/cd4d61678bc26267f3e5371735ae3f579709ea30",
                 "reference": "cd4d61678bc26267f3e5371735ae3f579709ea30",
                 "shasum": ""
             },
@@ -113,12 +113,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-api-php-client-services.git",
+                "url": "https://github.com/googleapis/google-api-php-client-services.git",
                 "reference": "bec0db9d4305c8636d4123864b34b9fcc67a7e96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/bec0db9d4305c8636d4123864b34b9fcc67a7e96",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/bec0db9d4305c8636d4123864b34b9fcc67a7e96",
                 "reference": "bec0db9d4305c8636d4123864b34b9fcc67a7e96",
                 "shasum": ""
             },
@@ -143,19 +143,19 @@
             "keywords": [
                 "google"
             ],
-            "time": "2017-05-10 17:50:41"
+            "time": "2017-05-10T17:50:41+00:00"
         },
         {
             "name": "google/auth",
             "version": "v0.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/google/google-auth-library-php.git",
+                "url": "https://github.com/googleapis/google-auth-library-php.git",
                 "reference": "ec4edcb043e523267973fda308d9412d7db78e17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-auth-library-php/zipball/ec4edcb043e523267973fda308d9412d7db78e17",
+                "url": "https://api.github.com/repos/googleapis/google-auth-library-php/zipball/ec4edcb043e523267973fda308d9412d7db78e17",
                 "reference": "ec4edcb043e523267973fda308d9412d7db78e17",
                 "shasum": ""
             },
@@ -304,7 +304,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2017-05-20 23:14:18"
+            "time": "2017-05-20T23:14:18+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -444,7 +444,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2017-05-11 11:15:45"
+            "time": "2017-05-11T11:15:45+00:00"
         },
         {
             "name": "league/flysystem-cached-adapter",
@@ -570,7 +570,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-05-03 13:17:21"
+            "time": "2017-05-03T13:17:21+00:00"
         },
         {
             "name": "nao-pon/flysystem-cached-extra",
@@ -611,7 +611,7 @@
                 }
             ],
             "description": "Extra traits for Flysystem cached adapter",
-            "time": "2016-03-21 08:19:52"
+            "time": "2016-03-21T08:19:52+00:00"
         },
         {
             "name": "nao-pon/flysystem-google-drive",
@@ -660,7 +660,7 @@
                 }
             ],
             "description": "Flysystem adapter for Google Drive",
-            "time": "2017-04-07 05:10:20"
+            "time": "2017-04-07T05:10:20+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -752,7 +752,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2017-05-14 20:34:16"
+            "time": "2017-05-14T20:34:16+00:00"
         },
         {
             "name": "psr/cache",
@@ -798,7 +798,7 @@
                 "psr",
                 "psr-6"
             ],
-            "time": "2016-10-13 14:48:10"
+            "time": "2016-10-13T14:48:10+00:00"
         },
         {
             "name": "psr/http-message",
@@ -848,7 +848,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06 14:39:51"
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "psr/log",
@@ -895,7 +895,78 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
+            "name": "spidgorny/nadlib",
+            "version": "dev-default",
+            "source": {
+                "type": "hg",
+                "url": "https://bitbucket.org/spidgorny/nadlib",
+                "reference": "a794ad20f3eb9df19d677a7c7f7f42b4cb4ec791"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/spidgorny/nadlib/get/a794ad20f3eb9df19d677a7c7f7f42b4cb4ec791.zip",
+                "reference": "a794ad20f3eb9df19d677a7c7f7f42b4cb4ec791",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5 || >=7"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6"
+            },
+            "suggest": {
+                "components/bootstrap": "dev-master",
+                "components/modernizr": "dev-master",
+                "danielstjules/stringy": ">=1.5.1",
+                "flot/flot": "dev-master",
+                "gnat/nc-cms": "*",
+                "greenlion/php-sql-parser": "*",
+                "hrmatching/advanced_html_dom": "dev-master",
+                "htmlawed/htmlawed": "dev-master",
+                "leafo/lessphp": "0.4.0",
+                "michelf/php-markdown": "~1.4",
+                "mustangostang/spyc": "dev-master",
+                "phpauth/phpauth": "dev-master",
+                "phpunit/phpunit": "*",
+                "robloach/component-installer": "^0.2.3",
+                "squizlabs/php_codesniffer": "^3.0@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./",
+                    "Base/",
+                    "Cache/",
+                    "Controller/",
+                    "CSS/",
+                    "Data/",
+                    "DB/",
+                    "Debug/",
+                    "HTML/",
+                    "HTMLForm/",
+                    "HTTP/",
+                    "LocalLang/",
+                    "ORM/",
+                    "SQL/",
+                    "Queue/",
+                    "Runner/",
+                    "SQL/",
+                    "Time/",
+                    "User/"
+                ],
+                "files": [
+                    "init.php"
+                ],
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "homepage": "https://bitbucket.org/spidgorny/nadlib",
+            "time": "2020-01-15T10:05:23+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -950,14 +1021,15 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-05-18 12:56:12"
+            "time": "2017-05-18T12:56:12+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "symfony/yaml": 20
+        "symfony/yaml": 20,
+        "spidgorny/nadlib": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

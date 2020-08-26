@@ -14,11 +14,11 @@ class Index extends \IndexBase
 	 */
 	public $active;
 
-	function __construct()
+	function __construct(ConfigInterface  $config)
 	{
 		$this->csp['default-src'][] = 'fonts.googleapis.com';
 		$this->csp['default-src'][] = 'fonts.gstatic.com';
-		parent::__construct();
+		parent::__construct($config);
 	}
 
 	public function initController() {

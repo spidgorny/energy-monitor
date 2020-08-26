@@ -2,7 +2,8 @@
     "require": {
         "google/apiclient": "2.0",
         "nao-pon/flysystem-google-drive": "~1.1",
-        "symfony/yaml": "3.4.x-dev"
+        "symfony/yaml": "3.4.x-dev",
+        "spidgorny/nadlib": "dev-default"
     },
 	"require-bak": {
 		"spidgorny/nadlib": "dev-slawa"
@@ -21,5 +22,8 @@
 	},
 	"minimum-stability": "dev",
 	"config": {
+	},
+	"scripts": {
+		"serve": "php -S 0.0.0.0:80"
 	}
 }
