@@ -2,3 +2,4 @@
 
 sudo apt-get install python3-matplotlib
 pip3 install -r requirements.txt
+mkdir training
